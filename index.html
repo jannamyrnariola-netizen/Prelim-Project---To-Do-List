@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Weekly To-Do List</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/header.css">
+  <link rel="stylesheet" href="css/board.css">
+  <link rel="stylesheet" href="css/forms.css">
+</head>
+<body>
+  <header class="top">
+    <div class="brand profile-badge"></div>
+    <div class="top-right">
+      <div class="summary" aria-label="Summary"></div>
+    </div>
+  </header>
+  <nav class="filters" role="group" aria-label="Filter tasks"></nav>
+  <main class="board" aria-label="Tasks by day"></main>
+  <button class="open-form" type="button"><span aria-hidden="true">+</span> New task</button>
+  <dialog class="task-form" aria-label="Task form"></dialog>
+  <dialog class="profile-form" aria-label="Edit profile"></dialog>
+  <script type="module" src="js/controller.js"></script>
+</body>
+</html>
