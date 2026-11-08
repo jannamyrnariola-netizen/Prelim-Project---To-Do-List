@@ -37,7 +37,7 @@ export default class BoardView extends View {
     const done = tasks.filter((t) => t.done).length;
     const note = tasks.length
       ? `${done} of ${tasks.length} done`
-      : 'Nothing planned yet. Click + to add a task.';
+            : `Nothing planned for ${day} yet. Click + to add a task.`;
     return `
       <section class="day" aria-label="${day}">
         <header class="day-head">
