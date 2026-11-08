@@ -21,7 +21,7 @@ export default class FormView extends View {
     });
   }
 
-  // Runs for the Cancel button and for Esc / any other way the dialog closes.
+  // Runs for the Cancel button and for Esc / any other way the popup closes.
   addHandlerCancel(handler) {
     this._parent.addEventListener('click', (e) => {
       if (e.target.closest('[data-action="cancel"]')) handler();
