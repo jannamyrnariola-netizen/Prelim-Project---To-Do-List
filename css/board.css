@@ -262,3 +262,7 @@
   font-size: 22px;
   line-height: 1;
 }
+
+.is-today .day-head h2 {
+  font-weight: 700;
+}
