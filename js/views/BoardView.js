@@ -7,7 +7,7 @@ export default class BoardView extends View {
       if (button) handler(button.dataset.day);
     });
   }
-
+  // Listens for clicks on the done circle and tells the controller which task was toggled
   addHandlerToggle(handler) {
     this._addHandler('toggle', handler);
   }
