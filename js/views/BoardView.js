@@ -39,7 +39,7 @@ export default class BoardView extends View {
       ? `${done} of ${tasks.length} done`
             : `Nothing planned for ${day} yet. Click + to add a task.`;
     return `
-      <section class="day" aria-label="${day}">
+        <section class="day${day === this._data.today ? ' is-today' : ''}" aria-label="${day}">
         <header class="day-head">
           <h2>${day} <span class="day-count">(${tasks.length})</span></h2>
           <button class="icon-btn" data-action="add" data-day="${day}" aria-label="Add task on ${day}">+</button>
