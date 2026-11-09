@@ -79,6 +79,7 @@ const controlCancelEdit = () => {
 };
 
 const controlDelete = (id) => {
+  if (!confirm('Are you sure you want to delete this task?')) return; 
   model.deleteTask(id);
   renderAll();
 };
