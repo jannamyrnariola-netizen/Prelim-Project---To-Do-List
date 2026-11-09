@@ -1,3 +1,4 @@
+
 import View from './View.js';
 
 export default class SummaryView extends View {
@@ -5,9 +6,11 @@ export default class SummaryView extends View {
     const { total, done, percent, remainingMinutes } = this._data;
     return `
       <span><b>${done}</b> of <b>${total}</b> done</span>
+      <span><b>${percent}% complete</b></span>
       <span><b>${this._formatMinutes(remainingMinutes)}</b> left</span>
       <div class="progress" role="progressbar" aria-label="${percent}% complete"
-        aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}">
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="${percent}"
+        aria-valuetext="${done} of ${total} tasks completed">
         <i style="width:${percent}%"></i>
       </div>`;
   }
