@@ -1,3 +1,4 @@
+
 // CONTROLLER: the only layer that talks to both the model and the views.
 // It builds no HTML.
 import * as model from './model.js';
@@ -51,6 +52,7 @@ const controlSubmit = (data) => {
 
   if (model.state.editingId) model.updateTask(model.state.editingId, data);
   else model.addTask(data);
+  model.setFilter('all'); 
   model.cancelEdit();
   formView.close();
   renderAll();
@@ -79,7 +81,6 @@ const controlCancelEdit = () => {
 };
 
 const controlDelete = (id) => {
-  if (!confirm('Are you sure you want to delete this task?')) return; 
   model.deleteTask(id);
   renderAll();
 };
