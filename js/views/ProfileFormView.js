@@ -1,3 +1,4 @@
+
 import View from './View.js';
 
 // The "Edit profile" dialog.
@@ -10,28 +11,64 @@ export default class ProfileFormView extends View {
     if (this._parent.open) this._parent.close();
   }
 
+  // Handle profile form submission and validate inputs.
   addHandlerSubmit(handler) {
     this._parent.addEventListener('submit', (e) => {
       e.preventDefault();
-      handler(Object.fromEntries(new FormData(e.target)));
+
+      const data = Object.fromEntries(new FormData(e.target));
+
+      // Remove unnecessary spaces from the name.
+      data.name = (data.name || '').trim();
+
+      // Validate profile name.
+      if (!data.name) {
+        alert('Please enter your name.');
+        return;
+      }
+
+      if (data.name.length > 50) {
+        alert('Your name must not exceed 50 characters.');
+        return;
+      }
+
+      // Validate selected avatar color.
+      if (!this._data.colors.includes(data.color)) {
+        alert('Please select a valid avatar color.');
+        return;
+      }
+
+      handler(data);
     });
   }
 
-  // Runs for the Cancel button and for Esc / any other way the dialog closes.
+  // Handle Cancel button and dialog closing.
   addHandlerCancel(handler) {
     this._parent.addEventListener('click', (e) => {
-      if (e.target.closest('[data-action="cancel"]')) handler();
+      if (e.target.closest('[data-action="cancel"]')) {
+        this.close();
+      }
     });
+
+    // Runs when the dialog closes, including through Escape.
     this._parent.addEventListener('close', () => handler());
   }
 
+  // Generate the profile form markup.
   _generateMarkup() {
     const { colors, values, error } = this._data;
+
     const swatches = colors
       .map(
         (c) => `
           <label class="swatch">
-            <input type="radio" name="color" value="${this._escape(c)}"${c === values.color ? ' checked' : ''}>
+            <input
+              type="radio"
+              name="color"
+              value="${this._escape(c)}"
+              ${c === values.color ? 'checked' : ''}
+              required
+            >
             <span style="background:${this._escape(c)}"></span>
           </label>`
       )
@@ -39,19 +76,44 @@ export default class ProfileFormView extends View {
 
     return `
       <h2>Edit profile</h2>
+
       <form class="form" novalidate>
-        <label>Your name
-          <input name="name" type="text" value="${this._escape(values.name ?? '')}" autocomplete="off">
+        <label>
+          Your name
+          <input
+            name="name"
+            type="text"
+            value="${this._escape(values.name ?? '')}"
+            maxlength="50"
+            required
+            autocomplete="name"
+            placeholder="Enter your name"
+          >
         </label>
+
         <fieldset class="field">
           <legend>Avatar color</legend>
-          <div class="swatches">${swatches}</div>
+          <div class="swatches">
+            ${swatches}
+          </div>
         </fieldset>
-        ${error ? `<p class="error" role="alert">${this._escape(error)}</p>` : ''}
+
+        ${
+          error
+            ? `<p class="error" role="alert">${this._escape(error)}</p>`
+            : ''
+        }
+
         <div class="form-actions">
-          <button class="btn btn-primary" type="submit">Save profile</button>
-          <button class="btn" type="button" data-action="cancel">Cancel</button>
+          <button class="btn btn-primary" type="submit">
+            Save profile
+          </button>
+
+          <button class="btn" type="button" data-action="cancel">
+            Cancel
+          </button>
         </div>
-      </form>`;
+      </form>
+    `;
   }
 }
