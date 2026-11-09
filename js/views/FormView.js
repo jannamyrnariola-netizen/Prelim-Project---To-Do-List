@@ -4,7 +4,13 @@ import View from './View.js';
 // The form lives in a <dialog> opened by the "+" buttons.
 export default class FormView extends View {
   open() {
-    if (!this._parent.open) this._parent.showModal();
+    if (!this._parent.open) {
+      this._parent.showModal();
+
+      requestAnimationFrame(() => {
+        this._parent.querySelector('[name="title"]')?.focus();
+      });
+    }
   }
 
   close() {
@@ -23,19 +29,40 @@ export default class FormView extends View {
     this._parent.addEventListener('submit', (e) => {
       e.preventDefault();
 
-      const data = Object.fromEntries(new FormData(e.target));
+      const form = e.target;
+      const submitButton = form.querySelector('[type="submit"]');
+      const data = Object.fromEntries(new FormData(form));
 
-      // Remove unnecessary spaces from the title.
-      data.title = data.title.trim();
+      // Normalize task title.
+      data.title = (data.title || '').trim().replace(/\s+/g, ' ');
 
-      // Validate task title.
+      // Validate empty title.
       if (!data.title) {
         alert('Please enter a task title.');
         return;
       }
 
+      // Validate minimum title length.
+      if (data.title.length < 3) {
+        alert('Task title must contain at least 3 characters.');
+        return;
+      }
+
+      // Validate maximum title length.
       if (data.title.length > 100) {
         alert('Task title must not exceed 100 characters.');
+        return;
+      }
+
+      // Validate selected day.
+      if (!this._data.days.includes(data.day)) {
+        alert('Please select a valid day.');
+        return;
+      }
+
+      // Validate selected priority.
+      if (!this._data.priorities.includes(data.priority)) {
+        alert('Please select a valid priority.');
         return;
       }
 
@@ -54,18 +81,34 @@ export default class FormView extends View {
 
       data.minutes = minutes;
 
-      handler(data);
+      // Prevent duplicate submission.
+      if (submitButton.disabled) return;
+
+      submitButton.disabled = true;
+      submitButton.textContent = 'Saving...';
+
+      try {
+        handler(data);
+      } catch (error) {
+        submitButton.disabled = false;
+        submitButton.textContent = this._data.editing
+          ? 'Save changes'
+          : 'Add task';
+
+        throw error;
+      }
     });
   }
 
-  // Handle Cancel button, Escape key, and dialog closing.
+  // Handle Cancel button and dialog closing.
   addHandlerCancel(handler) {
     this._parent.addEventListener('click', (e) => {
       if (e.target.closest('[data-action="cancel"]')) {
-        handler();
+        this.close();
       }
     });
 
+    // Runs when the dialog closes, including through Escape.
     this._parent.addEventListener('close', () => handler());
   }
 
@@ -85,7 +128,7 @@ export default class FormView extends View {
       list
         .map(
           (o) =>
-            `<option${o === selected ? ' selected' : ''}>${this._escape(o)}</option>`
+            `<option value="${this._escape(o)}"${o === selected ? ' selected' : ''}>${this._escape(o)}</option>`
         )
         .join('');
 
@@ -93,44 +136,45 @@ export default class FormView extends View {
       <h2>${editing ? 'Edit task' : 'Add a task'}</h2>
 
       <form class="form" novalidate>
-        <label>
+        <label for="taskTitle">
           Title
-          <input
-            name="title"
-            type="text"
-            value="${this._escape(v.title)}"
-            maxlength="100"
-            required
-            autocomplete="off"
-            placeholder="Enter task title"
-          >
         </label>
 
-        <label>
-          Day
-          <select name="day">
-            ${options(days, v.day)}
-          </select>
-        </label>
+        <input
+          id="taskTitle"
+          name="title"
+          type="text"
+          value="${this._escape(v.title)}"
+          minlength="3"
+          maxlength="100"
+          required
+          autocomplete="off"
+          placeholder="Enter task title"
+        >
 
-        <label>
-          Priority
-          <select name="priority">
-            ${options(priorities, v.priority)}
-          </select>
-        </label>
+        <label for="taskDay">Day</label>
+        <select id="taskDay" name="day" required>
+          ${options(days, v.day)}
+        </select>
 
-        <label>
+        <label for="taskPriority">Priority</label>
+        <select id="taskPriority" name="priority" required>
+          ${options(priorities, v.priority)}
+        </select>
+
+        <label for="taskMinutes">
           Estimated minutes
-          <input
-            name="minutes"
-            type="number"
-            min="5"
-            step="5"
-            value="${this._escape(v.minutes)}"
-            required
-          >
         </label>
+
+        <input
+          id="taskMinutes"
+          name="minutes"
+          type="number"
+          min="5"
+          step="5"
+          value="${this._escape(v.minutes)}"
+          required
+        >
 
         ${
           error
