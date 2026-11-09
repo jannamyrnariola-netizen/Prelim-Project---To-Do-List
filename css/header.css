@@ -83,11 +83,15 @@ h1 {
 }
 
 .filters button[aria-pressed=true] {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
+  color: var(--blue);
+  background: #eaf0ff;
+  border-bottom-color: var(--blue);
+  border-radius: 8px;
   font-weight: 600;
+  padding-left: 12px;
+  padding-right: 12px;
+  transition: all 0.2s ease;
 }
-
 /* profile avatar */
 .avatar {
   width: 36px;
